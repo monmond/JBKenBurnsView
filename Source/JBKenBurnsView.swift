@@ -3,45 +3,46 @@
 //  Version 1.0
 //
 //  Created by Johan Basberg, on 16/05/2016.
+//  Created by sasawat sankosik, on 19/06/2018.
 //  Based on the work by Javier Berlana et. al.
 //
 //
 
 import UIKit
 
-enum KenBurnsZoomMode: Int {
+public enum KenBurnsZoomMode: Int {
   case In
   case Out
   case Random
 }
 
-protocol JBKenBurnsViewDelegate {
+public  protocol JBKenBurnsViewDelegate {
   func finishedShowingLastImage()
 }
 
-class JBKenBurnsView: UIView {
+public class JBKenBurnsView: UIView {
   
   // MARK: - Customizable Defaults
   
   /// Change this to randomly zoom in or out, or lock it to one or the other.
-  var zoomMode: KenBurnsZoomMode = .Random
+  public var zoomMode: KenBurnsZoomMode = .Random
   
   /// How much the image should be zoomed. Default 1.1 appears to be a reasonable ration, without too much pixelation.
   private let enlargeRatio: CGFloat = 1.1
   
   /// This variable can be changed when starting the animation. However, change this to alter the default behavior.
-  static let randomFirstImage = false
+  public static let randomFirstImage = false
   
   /// Enable screen orientation awareness if the view needs to be able to handle the transitions between portrait and landscape.
-  let screenOrientationAwareness = true
+  public let screenOrientationAwareness = true
   
   /// Set this to true to temporarily pause the animations.
   
   
   // MARK: - Variables
   
-  var kenBurnsDelegate: JBKenBurnsViewDelegate?
-  var isPaused: Bool {
+  public var kenBurnsDelegate: JBKenBurnsViewDelegate?
+  public var isPaused: Bool {
     get {
       return layer.speed == 0
     }
@@ -74,7 +75,7 @@ class JBKenBurnsView: UIView {
   
   // MARK: - View Life Cycle
   
-  override func awakeFromNib() {
+  public override func awakeFromNib() {
     super.awakeFromNib()
     backgroundColor = UIColor.clear
     layer.masksToBounds = true
@@ -106,7 +107,7 @@ class JBKenBurnsView: UIView {
    - parameter shouldLoop: A boolean determining if the image animation should start from the last provided image is shown.
    - parameter randomFirstImage: Pass true if you want the initial image to be picked at random (default is false).
    */
-  func animateWithImagePaths(imagePaths: [String], imageAnimationDuration duration: TimeInterval, initialDelay delay: TimeInterval, shouldLoop loop: Bool, randomFirstImage randomize: Bool = randomFirstImage) {
+  public func animateWithImagePaths(imagePaths: [String], imageAnimationDuration duration: TimeInterval, initialDelay delay: TimeInterval, shouldLoop loop: Bool, randomFirstImage randomize: Bool = randomFirstImage) {
     
     for path in imagePaths {
       if let image = UIImage(contentsOfFile: path) {
@@ -131,7 +132,7 @@ class JBKenBurnsView: UIView {
    - parameter shouldLoop: A boolean determining if the image animation should start from the last provided image is shown.
    - parameter randomFirstImage: Pass true if you want the initial image to be picked at random (default is false).
    */
-  func animateWithImages(images: [UIImage], imageAnimationDuration duration: TimeInterval, initialDelay delay: TimeInterval, shouldLoop loop: Bool, randomFirstImage randomize: Bool = randomFirstImage) {
+  public func animateWithImages(images: [UIImage], imageAnimationDuration duration: TimeInterval, initialDelay delay: TimeInterval, shouldLoop loop: Bool, randomFirstImage randomize: Bool = randomFirstImage) {
     
     guard images.count > 0 else {
       assertionFailure("Cannot animate an empty image array.")
@@ -146,7 +147,7 @@ class JBKenBurnsView: UIView {
    Call this to permanently stop the Ken Burns animation immediately; calling this in the middle of an animation doesn't look great. Consider calling ´pauseAnimation()´instead. The currently visible image will remain on screen.
    - Discussion: As calling this permanently stops the animation, it also clears the array of images. The only way to start animating again is to call either ´animateWithImagePaths(:imageAnimationduration:initialDelay:shouldLoop)´ or ´animateWithImages(:imageAnimationduration:initialDelay:shouldLoop)´
    */
-  func stopAnimation() {
+  public func stopAnimation() {
     layer.removeAllAnimations()
     if subviews.count > 0 {
       subviews[0].layer.removeAllAnimations()
@@ -155,7 +156,7 @@ class JBKenBurnsView: UIView {
   }
   
   /// Temporarily pauses the animation. Restart the animation by calling `resumeAnimationAfterDelay(initialDelay:)´.
-  func pauseAnimation() {
+  public func pauseAnimation() {
     guard !isPaused else {
       return
     }
@@ -170,7 +171,7 @@ class JBKenBurnsView: UIView {
    - Important: Calling this when the animation isn't actually paused will cause no visible changes.
    - Parameter initialDelay: The number of seconds to delay the animation (default is 0).
    */
-  func resumeAnimation(afterDelay delay: TimeInterval = 0) {
+  public func resumeAnimation(afterDelay delay: TimeInterval = 0) {
     guard isPaused else {
       return
     }
@@ -188,11 +189,11 @@ class JBKenBurnsView: UIView {
   //MARK: - Usage: Image Handling
   
   
-  func addImage(image: UIImage) {
+  public func addImage(image: UIImage) {
     imagesArray.append(image)
   }
   
-  func currentImage() -> UIImage? {
+  public func currentImage() -> UIImage? {
     if imagesArray.count >= (currentImageIndex + 1) {
       return imagesArray[currentImageIndex]
     } else {
@@ -220,7 +221,7 @@ class JBKenBurnsView: UIView {
     }
   }
   
-  func advanceImageIndex() -> Bool {
+  public func advanceImageIndex() -> Bool {
     if !shouldLoop && nextImageIndex == indexOfFirstImageShown {
       // Next image is the first image, which means we are done
       kenBurnsDelegate?.finishedShowingLastImage()
@@ -233,7 +234,7 @@ class JBKenBurnsView: UIView {
     }
   }
   
-  func prepareAnimationsForImage(image: UIImage) {
+  public func prepareAnimationsForImage(image: UIImage) {
     
     var origin = CGPoint.zero
     var move = CGPoint.zero
@@ -336,7 +337,7 @@ class JBKenBurnsView: UIView {
     // Transform the image view
   }
   
-  func startAnimationSequence(withFade fade: Bool = true) {
+  public func startAnimationSequence(withFade fade: Bool = true) {
     guard isPaused == false else {
       return
     }
@@ -374,7 +375,7 @@ class JBKenBurnsView: UIView {
   //MARK: - Notification Responses
   
   /// If ´screenOrientationAwareness´ is true, this notification response will relayout and present the next image whenever the screen orientation changes.
-  @objc internal func deviceOrientationDidChange() {
+  @objc public  func deviceOrientationDidChange() {
     
     var didActuallyChange = false
     let newOrientation: UIDeviceOrientation = UIDevice.current.orientation
