@@ -144,6 +144,59 @@ public class JBKenBurnsView: UIView {
   }
   
   /**
+   Start the Ken Burns effect by providing an array of urls.
+   - parameter images: And array of urls to be animated with the Ken Burns effect in the order of the array.
+   - parameter imageAnimationDuration: The animation duration for each image, excluding the cross fading between images.
+   - parameter initialDelay: Pass a value higher than zero to delay the Ken Burns effect.
+   - parameter shouldLoop: A boolean determining if the image animation should start from the last provided image is shown.
+   - parameter randomFirstImage: Pass true if you want the initial image to be picked at random (default is false).
+  */
+  public func animateWithImages(urls: [URL], imageAnimationDuration duration: TimeInterval, initialDelay delay: TimeInterval, shouldLoop loop: Bool, randomFirstImage randomize: Bool = randomFirstImage) {
+    
+    guard urls.count > 0 else {
+      assertionFailure("Cannot animate an empty image array.")
+      return
+    }
+    
+    var images: [UIImage] = []
+    let queue = DispatchQueue.global()
+//    let queue = DispatchQueue.global(qos: .userInteractive)
+    let group_imageDownloader = DispatchGroup()
+    for u in urls {
+      group_imageDownloader.enter()
+      queue.async {
+        if let data = try? Data(contentsOf: u) {
+          if let image = UIImage(data: data) {
+            images.append(image)
+          }
+          group_imageDownloader.leave()
+        } else {
+          group_imageDownloader.leave()
+        }
+      }
+    }
+    
+    group_imageDownloader.notify(queue: .main, execute: {
+      guard images.count > 0 else {
+        assertionFailure("Cannot animate an empty image array.")
+        return
+      }
+      self.imagesArray = images
+      self.startAnimationsWithDuration(duration: duration, initialDelay: delay, shouldLoop: loop, randomFirstImage: randomize)
+    })
+    
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /**
    Call this to permanently stop the Ken Burns animation immediately; calling this in the middle of an animation doesn't look great. Consider calling ´pauseAnimation()´instead. The currently visible image will remain on screen.
    - Discussion: As calling this permanently stops the animation, it also clears the array of images. The only way to start animating again is to call either ´animateWithImagePaths(:imageAnimationduration:initialDelay:shouldLoop)´ or ´animateWithImages(:imageAnimationduration:initialDelay:shouldLoop)´
    */
