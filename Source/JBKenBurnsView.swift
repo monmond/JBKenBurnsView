@@ -9,6 +9,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 public enum KenBurnsZoomMode: Int {
   case In
@@ -165,12 +166,11 @@ public class JBKenBurnsView: UIView {
     for u in urls {
       group_imageDownloader.enter()
       queue.async {
-        if let data = try? Data(contentsOf: u) {
-          if let image = UIImage(data: data) {
-            images.append(image)
+        ImageDownloader.default.downloadImage(with: u, options: [], progressBlock: nil) {
+          (image, error, url, data) in
+          if let img = image {
+            images.append(img)
           }
-          group_imageDownloader.leave()
-        } else {
           group_imageDownloader.leave()
         }
       }

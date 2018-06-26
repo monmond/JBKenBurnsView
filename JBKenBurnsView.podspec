@@ -7,6 +7,8 @@
 #
 
 Pod::Spec.new do |s|
+
+  # Setting
   s.name = 'JBKenBurnsView'
   s.version = '0.1.0'
   s.license = 'MIT'
@@ -18,5 +20,12 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '10.0'
 
+  # Source
   s.source_files = 'Source/**'
+  # s.source_files  = 'FadeAnimation/**/*.{swift}'
+  # s.resources     = 'FadeAnimation/**/*.{xcassets,storyboard,xib,xcdatamodeld,lproj}'
+
+  # Dependency
+  s.dependency   'Kingfisher'
+
 end
